@@ -87,6 +87,15 @@ void CCharacter::Destroy()
 	m_Alive = false;
 }
 
+// check if ninja or not
+bool CCharacter::CheckNinja()
+{
+	if(m_ActiveWeapon == WEAPON_NINJA)
+		return true;
+	else
+		return false;
+}
+
 void CCharacter::SetWeapon(int W)
 {
 	if(W == m_ActiveWeapon)
