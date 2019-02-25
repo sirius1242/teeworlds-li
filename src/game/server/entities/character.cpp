@@ -708,7 +708,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 		return false;
 
 	// m_pPlayer only inflicts half damage on self
-	if(From == m_pPlayer->GetCID())
+	if((From == m_pPlayer->GetCID())&&(Weapon != WEAPON_RIFLE))
 		Dmg = max(1, Dmg/2);
 
 	m_DamageTaken++;
