@@ -57,8 +57,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_EmoteStop = -1;
 	m_LastAction = -1;
 	m_LastNoAmmoSound = -1;
-	m_ActiveWeapon = WEAPON_GUN;
-	m_LastWeapon = WEAPON_HAMMER;
+	m_ActiveWeapon = WEAPON_RIFLE;
 	m_QueuedWeapon = -1;
 
 	m_pPlayer = pPlayer;
@@ -699,47 +698,11 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 		return false;
 
 	// m_pPlayer only inflicts half damage on self
-	if(From == m_pPlayer->GetCID())
-		Dmg = max(1, Dmg/2);
 
 	m_DamageTaken++;
 
-	// create healthmod indicator
-	if(Server()->Tick() < m_DamageTakenTick+25)
-	{
-		// make sure that the damage indicators doesn't group together
-		GameServer()->CreateDamageInd(m_Pos, m_DamageTaken*0.25f, Dmg);
-	}
-	else
-	{
-		m_DamageTaken = 0;
-		GameServer()->CreateDamageInd(m_Pos, 0, Dmg);
-	}
-
 	if(Dmg)
-	{
-		if(m_Armor)
-		{
-			if(Dmg > 1)
-			{
-				m_Health--;
-				Dmg--;
-			}
-
-			if(Dmg > m_Armor)
-			{
-				Dmg -= m_Armor;
-				m_Armor = 0;
-			}
-			else
-			{
-				m_Armor -= Dmg;
-				Dmg = 0;
-			}
-		}
-
-		m_Health -= Dmg;
-	}
+		m_Health = 0;
 
 	m_DamageTakenTick = Server()->Tick();
 
