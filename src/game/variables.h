@@ -85,7 +85,8 @@ MACRO_CONFIG_INT(SvVoteKickMin, sv_vote_kick_min, 0, 0, MAX_CLIENTS, CFGFLAG_SER
 MACRO_CONFIG_INT(SvVoteKickBantime, sv_vote_kick_bantime, 5, 0, 1440, CFGFLAG_SERVER, "The time to ban a player if kicked by vote. 0 makes it just use kick")
 
 // new commands
-MACRO_CONFIG_INT(SvSpawnprotection, sv_spawnprotection, 0, 0, 5, CFGFLAG_SERVER, "Spawnprotection in seconds (0 disables)")
+MACRO_CONFIG_INT(SvSpawnprotection, sv_spawnprotection, 1, 0, 5, CFGFLAG_SERVER, "Spawnprotection in seconds (0 disables)")
+MACRO_CONFIG_INT(SvCoolDownTime, sv_cd, 10, 1, 200, CFGFLAG_SERVER, "CoolDownTime of laser in seconds (1-200, 10 default)")
 
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly
