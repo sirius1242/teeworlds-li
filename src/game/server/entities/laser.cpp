@@ -14,6 +14,7 @@ CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEner
 	m_Bounces = 0;
 	m_EvalTick = 0;
 	m_Hit = 0;
+	m_Destroy = 0;
 	GameWorld()->InsertEntity(this);
 	DoBounce();
 }
@@ -46,6 +47,7 @@ void CLaser::DoBounce()
 	if(m_Energy < 0)
 	{
 		GameServer()->m_World.DestroyEntity(this);
+		m_Destroy = 1;
 		return;
 	}
 
@@ -89,6 +91,7 @@ void CLaser::DoBounce()
 void CLaser::Reset()
 {
 	GameServer()->m_World.DestroyEntity(this);
+	m_Destroy = 1;
 }
 
 void CLaser::Tick()
@@ -100,6 +103,14 @@ void CLaser::Tick()
 void CLaser::TickPaused()
 {
 	++m_EvalTick;
+}
+
+bool CLaser::Exist()
+{
+	if(m_Destroy)
+		return false;
+	else
+		return true;
 }
 
 void CLaser::Snap(int SnappingClient)

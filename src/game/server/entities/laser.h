@@ -14,6 +14,7 @@ public:
 	virtual void Tick();
 	virtual void TickPaused();
 	virtual void Snap(int SnappingClient);
+    bool Exist();
 
 protected:
 	bool HitCharacter(vec2 From, vec2 To);
@@ -27,6 +28,7 @@ private:
 	int m_EvalTick;
 	int m_Owner;
 	int m_Hit;
+    int m_Destroy;
 };
 
 #endif

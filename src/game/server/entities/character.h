@@ -8,6 +8,7 @@
 #include <game/generated/protocol.h>
 
 #include <game/gamecore.h>
+#include "laser.h"
 
 enum
 {
@@ -135,6 +136,7 @@ private:
     // Spawn Protection
     int m_SpawnProtectTick;
 
+    CLaser * Bullet=NULL;
 };
 
 #endif

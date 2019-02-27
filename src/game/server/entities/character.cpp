@@ -6,7 +6,6 @@
 #include <game/mapitems.h>
 
 #include "character.h"
-#include "laser.h"
 #include "projectile.h"
 
 //input count
@@ -247,7 +246,15 @@ void CCharacter::HandleWeaponSwitch()
 void CCharacter::FireWeapon()
 {
 	if(m_ReloadTimer != 0)
-		return;
+	{
+		if(Bullet!=NULL)
+		{
+			if(Bullet->Exist())
+				return;
+		}
+		else
+			return;
+	}
 
 	DoWeaponSwitch();
 	vec2 Direction = normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
@@ -374,7 +381,7 @@ void CCharacter::FireWeapon()
 
 		case WEAPON_RIFLE:
 		{
-			new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID());
+			Bullet = new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID());
 			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 		} break;
 
