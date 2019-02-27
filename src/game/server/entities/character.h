@@ -137,6 +137,9 @@ private:
     int m_SpawnProtectTick;
     int m_SpawnFireTick;
 
+    // CD Timer
+    int m_CD;
+
     CLaser * Bullet=NULL;
 };
 

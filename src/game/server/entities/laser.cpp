@@ -1,5 +1,6 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+#include<iostream>
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
 #include "laser.h"
@@ -22,16 +23,17 @@ CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEner
 
 bool CLaser::HitCharacter(vec2 From, vec2 To)
 {
+	std::cout<<"hit!"<<std::endl;
 	vec2 At;
-	//CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
-	CCharacter *pHit = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, NULL);
+	CCharacter *pOwnerChar = NULL;
+	if(!m_Hit)
+	{
+		pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
+		m_Hit = 1;
+	}
+	CCharacter *pHit = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar);
 	if(!pHit)
 		return false;
-	else if(!m_Hit)
-	{
-		m_Hit = 1;
-		return false;
-	}
 
 	m_From = From;
 	m_Pos = At;

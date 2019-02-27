@@ -44,6 +44,7 @@ CCharacter::CCharacter(CGameWorld *pWorld)
 	m_ProximityRadius = ms_PhysSize;
 	m_Health = 0;
 	m_Armor = 0;
+	m_CD = (g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay * Server()->TickSpeed() / 1000 * g_Config.m_SvCoolDownTime) / 10;
 }
 
 void CCharacter::Reset()
@@ -254,6 +255,11 @@ void CCharacter::FireWeapon()
 		{
 			if(Bullet->Exist())
 				return;
+			else
+			{
+				CCharacter *pChr = GameServer()->m_apPlayers[m_pPlayer->GetCID()]->GetCharacter();
+				pChr->m_Armor = 10;
+			}
 		}
 		else
 			return;
@@ -386,6 +392,8 @@ void CCharacter::FireWeapon()
 		{
 			Bullet = new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID());
 			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+			CCharacter *pChr = GameServer()->m_apPlayers[m_pPlayer->GetCID()]->GetCharacter();
+			pChr->m_Armor = 0;
 		} break;
 
 		case WEAPON_NINJA:
@@ -408,7 +416,7 @@ void CCharacter::FireWeapon()
 		m_aWeapons[m_ActiveWeapon].m_Ammo--;
 
 	if(!m_ReloadTimer)
-		m_ReloadTimer = g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay * Server()->TickSpeed() / 10000 * g_Config.m_SvCoolDownTime;
+		m_ReloadTimer = m_CD*10;
 }
 
 void CCharacter::HandleWeapons()
@@ -535,6 +543,12 @@ void CCharacter::Tick()
 		GameServer()->SendBroadcast(Buf, m_pPlayer->GetCID());
 
 		m_pPlayer->m_ForceBalanced = false;
+	}
+
+	if(m_ReloadTimer != 0 && m_ReloadTimer / m_CD != 10 && m_ReloadTimer % m_CD == 1) // CD Timer
+	{
+		CCharacter *pChr = GameServer()->m_apPlayers[m_pPlayer->GetCID()]->GetCharacter();
+		pChr->IncreaseArmor(1);
 	}
 
 	if(g_Config.m_SvSpawnprotection)
@@ -786,6 +800,7 @@ void CCharacter::Snap(int SnappingClient)
 		if(15 - ((m_SpawnProtectTick - Server()->Tick())%(15)) < 5)
 			return;
 	}
+	
 
 	CNetObj_Character *pCharacter = static_cast<CNetObj_Character *>(Server()->SnapNewItem(NETOBJTYPE_CHARACTER, m_pPlayer->GetCID(), sizeof(CNetObj_Character)));
 	if(!pCharacter)
