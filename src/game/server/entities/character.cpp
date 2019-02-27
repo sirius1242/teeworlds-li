@@ -63,6 +63,9 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_pPlayer = pPlayer;
 	m_Pos = Pos;
 
+	if(g_Config.m_SvSpawnprotection)
+		m_SpawnProtectTick = Server()->Tick() + Server()->TickSpeed()*g_Config.m_SvSpawnprotection;
+
 	m_Core.Reset();
 	m_Core.Init(&GameServer()->m_World.m_Core, GameServer()->Collision());
 	m_Core.m_Pos = m_Pos;
@@ -524,6 +527,22 @@ void CCharacter::Tick()
 		m_pPlayer->m_ForceBalanced = false;
 	}
 
+	if(g_Config.m_SvSpawnprotection)
+	{
+		if(m_SpawnProtectTick > Server()->Tick())
+		{
+			// All 100ms
+			if(Server()->Tick() % 5 == 0)
+			{
+				char aBuf[64];
+				str_format(aBuf, sizeof(aBuf), "Spawnprotection for %.1f sec.", (float)(m_SpawnProtectTick - Server()->Tick())/Server()->TickSpeed());
+				GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID());
+			}
+		}
+		else if(m_SpawnProtectTick == Server()->Tick())
+			GameServer()->SendBroadcast("", m_pPlayer->GetCID());
+	}
+
 	m_Core.m_Input = m_Input;
 	m_Core.Tick(true);
 
@@ -694,9 +713,8 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 {
 	m_Core.m_Vel += Force;
 
-	if(GameServer()->m_pController->IsFriendlyFire(m_pPlayer->GetCID(), From) && !g_Config.m_SvTeamdamage)
+	if(m_SpawnProtectTick > Server()->Tick() || (GameServer()->GetPlayerChar(From) && GameServer()->GetPlayerChar(From)->Spawnprotected()))
 		return false;
-
 	// m_pPlayer only inflicts half damage on self
 
 	m_DamageTaken++;
@@ -753,6 +771,12 @@ void CCharacter::Snap(int SnappingClient)
 	if(NetworkClipped(SnappingClient))
 		return;
 
+	if(g_Config.m_SvSpawnprotection && m_SpawnProtectTick >= Server()->Tick() && m_pPlayer->GetCID() != SnappingClient)
+	{
+		if(15 - ((m_SpawnProtectTick - Server()->Tick())%(15)) < 5)
+			return;
+	}
+
 	CNetObj_Character *pCharacter = static_cast<CNetObj_Character *>(Server()->SnapNewItem(NETOBJTYPE_CHARACTER, m_pPlayer->GetCID(), sizeof(CNetObj_Character)));
 	if(!pCharacter)
 		return;
@@ -805,4 +829,9 @@ void CCharacter::Snap(int SnappingClient)
 	}
 
 	pCharacter->m_PlayerFlags = GetPlayer()->m_PlayerFlags;
+}
+
+bool CCharacter::Spawnprotected()
+{
+	return m_SpawnProtectTick > Server()->Tick();
 }

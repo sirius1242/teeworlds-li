@@ -62,6 +62,7 @@ public:
 	void SetEmote(int Emote, int Tick);
 
 	bool IsAlive() const { return m_Alive; }
+    bool Spawnprotected();
 	class CPlayer *GetPlayer() { return m_pPlayer; }
 
 private:
@@ -130,6 +131,9 @@ private:
 	int m_ReckoningTick; // tick that we are performing dead reckoning From
 	CCharacterCore m_SendCore; // core that we should send
 	CCharacterCore m_ReckoningCore; // the dead reckoning core
+
+    // Spawn Protection
+    int m_SpawnProtectTick;
 
 };
 
