@@ -135,6 +135,7 @@ private:
 
     // Spawn Protection
     int m_SpawnProtectTick;
+    int m_SpawnFireTick;
 
     CLaser * Bullet=NULL;
 };

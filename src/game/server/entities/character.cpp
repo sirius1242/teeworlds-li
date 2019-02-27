@@ -61,6 +61,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 
 	m_pPlayer = pPlayer;
 	m_Pos = Pos;
+	m_SpawnFireTick = Server()->Tick() + Server()->TickSpeed()/2;
 
 	if(g_Config.m_SvSpawnprotection)
 		m_SpawnProtectTick = Server()->Tick() + Server()->TickSpeed()*g_Config.m_SvSpawnprotection;
@@ -245,6 +246,8 @@ void CCharacter::HandleWeaponSwitch()
 
 void CCharacter::FireWeapon()
 {
+	if(m_SpawnFireTick > Server()->Tick())
+		return;
 	if(m_ReloadTimer != 0)
 	{
 		if(Bullet!=NULL)
