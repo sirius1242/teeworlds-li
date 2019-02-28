@@ -1,6 +1,5 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
-#include<iostream>
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
 #include "laser.h"
@@ -23,7 +22,6 @@ CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEner
 
 bool CLaser::HitCharacter(vec2 From, vec2 To)
 {
-	std::cout<<"hit!"<<std::endl;
 	vec2 At;
 	CCharacter *pOwnerChar = NULL;
 	if(!m_Hit)

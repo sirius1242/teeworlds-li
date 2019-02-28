@@ -250,20 +250,7 @@ void CCharacter::FireWeapon()
 	if(m_SpawnFireTick > Server()->Tick())
 		return;
 	if(m_ReloadTimer != 0)
-	{
-		if(Bullet!=NULL)
-		{
-			if(Bullet->Exist())
-				return;
-			else
-			{
-				CCharacter *pChr = GameServer()->m_apPlayers[m_pPlayer->GetCID()]->GetCharacter();
-				pChr->m_Armor = 10;
-			}
-		}
-		else
 			return;
-	}
 
 	DoWeaponSwitch();
 	vec2 Direction = normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
@@ -392,8 +379,6 @@ void CCharacter::FireWeapon()
 		{
 			Bullet = new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID());
 			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
-			CCharacter *pChr = GameServer()->m_apPlayers[m_pPlayer->GetCID()]->GetCharacter();
-			pChr->m_Armor = 0;
 		} break;
 
 		case WEAPON_NINJA:
@@ -545,11 +530,13 @@ void CCharacter::Tick()
 		m_pPlayer->m_ForceBalanced = false;
 	}
 
-	if(m_ReloadTimer != 0 && m_ReloadTimer / m_CD != 10 && m_ReloadTimer % m_CD == 1) // CD Timer
+	if(Bullet!=NULL)
 	{
-		CCharacter *pChr = GameServer()->m_apPlayers[m_pPlayer->GetCID()]->GetCharacter();
-		pChr->IncreaseArmor(1);
+		if(!Bullet->Exist())
+			m_ReloadTimer = 0;
 	}
+	CCharacter *pChr = GameServer()->m_apPlayers[m_pPlayer->GetCID()]->GetCharacter();
+	pChr->m_Armor = m_ReloadTimer / m_CD;
 
 	if(g_Config.m_SvSpawnprotection)
 	{
