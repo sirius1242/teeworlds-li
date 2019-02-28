@@ -363,7 +363,6 @@ void IGameController::OnCharacterSpawn(class CCharacter *pChr)
 {
 	// default health
 	pChr->IncreaseHealth(10);
-	pChr->IncreaseArmor(10);
 
 	// give default weapons
 	pChr->GiveWeapon(WEAPON_RIFLE, -1);

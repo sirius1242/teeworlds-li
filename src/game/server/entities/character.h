@@ -140,7 +140,7 @@ private:
     // CD Timer
     int m_CD;
 
-    CLaser * Bullet=NULL;
+    CLaser * m_Bullet=NULL;
 };
 
 #endif
